@@ -6,6 +6,13 @@ const submitBtn = document.getElementById("submitBtn");
 const statusEl = document.getElementById("status");
 const results = document.getElementById("results");
 
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+themeToggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("light-theme");
+  const isLight = document.body.classList.contains("light-theme");
+  themeToggleBtn.textContent = isLight ? "Toggle Dark Mode" : "Toggle Light Mode";
+});
+
 uploadBox.addEventListener("click", () => fileInput.click());
 
 fileInput.addEventListener("change", () => {
@@ -54,26 +61,15 @@ form.addEventListener("submit", async (e) => {
 });
 
 function renderResults(data) {
-  const match = data.match_analysis || {};
-  document.getElementById("scoreNum").textContent = match.match_score ?? "--";
+  const origMatch = data.original_match_analysis || {};
+  document.getElementById("origScoreNum").textContent = origMatch.match_score ?? "--";
+  renderKeywords("origMatchedKeywords", origMatch.matched_keywords, false);
+  renderKeywords("origMissingKeywords", origMatch.missing_keywords, true);
 
-  const matchedEl = document.getElementById("matchedKeywords");
-  matchedEl.innerHTML = "";
-  (match.matched_keywords || []).forEach(kw => {
-    const span = document.createElement("span");
-    span.className = "kw";
-    span.textContent = kw;
-    matchedEl.appendChild(span);
-  });
-
-  const missingEl = document.getElementById("missingKeywords");
-  missingEl.innerHTML = "";
-  (match.missing_keywords || []).forEach(kw => {
-    const span = document.createElement("span");
-    span.className = "kw missing";
-    span.textContent = "Missing: " + kw;
-    missingEl.appendChild(span);
-  });
+  const tailorMatch = data.tailored_match_analysis || {};
+  document.getElementById("tailorScoreNum").textContent = tailorMatch.match_score ?? "--";
+  renderKeywords("tailorMatchedKeywords", tailorMatch.matched_keywords, false);
+  renderKeywords("tailorMissingKeywords", tailorMatch.missing_keywords, true);
 
   // Downloads
   const downloadsEl = document.getElementById("downloads");
@@ -165,4 +161,16 @@ function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str ?? "";
   return div.innerHTML;
+}
+
+function renderKeywords(elementId, keywords, isMissing) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.innerHTML = "";
+  (keywords || []).forEach(kw => {
+    const span = document.createElement("span");
+    span.className = isMissing ? "kw missing" : "kw";
+    span.textContent = isMissing ? "Missing: " + kw : kw;
+    el.appendChild(span);
+  });
 }

@@ -169,10 +169,13 @@ Tailor this resume for the job description. Rules:
 2. Reorder "skills" so the most relevant skills (matching the job description) appear first. You may add closely related skills the candidate likely has based on their experience, but do NOT fabricate unrelated skills.
 3. For each experience entry, rewrite the bullets to emphasize achievements and responsibilities relevant to the target job, using keywords from the job description where truthful. Keep facts (companies, titles, dates) unchanged. Keep 3-5 bullets per role, each starting with a strong action verb.
 4. Do not fabricate new jobs, degrees, or certifications.
-5. Identify a "match_analysis" object with:
-   - "match_score": integer 0-100 estimating how well the tailored resume matches the job description
-   - "matched_keywords": array of important keywords from the JD found in the resume
-   - "missing_keywords": array of important keywords from the JD NOT found in the candidate's background (skill gaps)
+5. Provide two match analysis objects:
+   - "original_match_analysis": estimating how well the ORIGINAL resume data matches the job description.
+   - "tailored_match_analysis": estimating how well the TAILORED resume matches the job description.
+   Each object must have:
+   - "match_score": integer 0-100
+   - "matched_keywords": array of important keywords from the JD found
+   - "missing_keywords": array of important keywords from the JD NOT found
 
 Return ONLY a JSON object with this exact structure:
 {{
@@ -184,7 +187,8 @@ Return ONLY a JSON object with this exact structure:
   "education": [{{"degree": "", "school": "", "location": "", "dates": ""}}],
   "certifications": [],
   "projects": [{{"name": "", "description": "", "bullets": []}}],
-  "match_analysis": {{"match_score": 0, "matched_keywords": [], "missing_keywords": []}}
+  "original_match_analysis": {{"match_score": 0, "matched_keywords": [], "missing_keywords": []}},
+  "tailored_match_analysis": {{"match_score": 0, "matched_keywords": [], "missing_keywords": []}}
 }}"""
 
         tailored_raw = call_groq(tailor_system, tailor_user, max_tokens=4000)
@@ -234,7 +238,8 @@ Return ONLY a JSON object:
             "success": True,
             "tailored_resume": tailored_data,
             "cover_letter": cover_data["cover_letter_body"],
-            "match_analysis": tailored_data.get("match_analysis", {}),
+            "original_match_analysis": tailored_data.get("original_match_analysis", {}),
+            "tailored_match_analysis": tailored_data.get("tailored_match_analysis", {}),
             "files": {
                 "resume_docx": os.path.basename(resume_docx_path),
                 "resume_pdf": os.path.basename(resume_pdf_path) if resume_pdf_path else None,
