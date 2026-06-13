@@ -38,11 +38,13 @@ These are usually pre-installed on most systems, but if not:
 - **LibreOffice** (for converting output .docx to .pdf)
 
 On Ubuntu/Debian:
+
 ```bash
 sudo apt install poppler-utils pandoc libreoffice
 ```
 
 On macOS (Homebrew):
+
 ```bash
 brew install poppler pandoc
 brew install --cask libreoffice

@@ -97,7 +97,7 @@ def process():
         resume_file = request.files["resume"]
         job_description = request.form.get("job_description", "").strip()
         company_name = request.form.get("company_name", "").strip() or "the company"
-        applicant_name = request.form.get("applicant_name", "").strip()
+        applicant_name = reque st.form.get("applicant_name", "").strip()
 
         if not job_description:
             return jsonify({"error": "Job description is required"}), 400
